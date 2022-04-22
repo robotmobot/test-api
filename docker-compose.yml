@@ -1,0 +1,22 @@
+version: '3.6'
+services:
+        testdb_postgres:
+                image: postgres
+                restart: always
+                ports:
+                        - 5432:5432
+                environment:
+                        POSTGRES_USER: user
+                        POSTGRES_PASSWORD: password
+                        POSTGRES_DB: test_data
+                container_name: testdb_postgres
+        test-api2:
+                build: 
+                        context: .
+                        dockerfile: Dockerfile
+                depends_on:
+                        - testdb_postgres
+                ports:
+                       - 1324:1324
+                tty: true
+                

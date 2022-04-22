@@ -1,25 +1,16 @@
 package main
 
 import (
-	"test-api/handler"
-
-	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
+	"net/http"
+	"test-api/database"
+	"test-api/router"
 )
 
 func main() {
-	e := echo.New()
+	db := database.NewDB()
 
-	e.Use(middleware.Logger())
-	e.Use(middleware.Recover())
+	r := router.New(db)
 
-	//routes
-	e.GET("/products/:id", handler.GetProduct)
-	e.GET("/products", handler.GetAllProducts)
-	e.POST("/products", handler.CreateProduct)
-	e.PUT("/products/:id", handler.UpdateProduct)
-	e.DELETE("/products/:id", handler.DeleteProduct)
-
-	e.Logger.Fatal(e.Start(":1323"))
-
+	r.Logger.Fatal(r.Start(":1324"))
+	http.ListenAndServe(":1324", r)
 }
