@@ -2,6 +2,7 @@ package database
 
 import (
 	"log"
+	"sync"
 	"time"
 
 	config "test-api/config"
@@ -13,20 +14,29 @@ import (
 
 var DB *gorm.DB
 
+var once *sync.Once
+
 func NewDB() *gorm.DB {
-	var err error
+	once.Do(func() {
+		var err error
+		DB, err = connectDB()
+		if err != nil {
+			log.Panic(err)
+		}
+
+		DB.AutoMigrate(&model.Product{})
+
+	})
+
+	return DB
+}
+
+func connectDB() (*gorm.DB, error) {
 	conString := config.GetPostgresConnectionString()
 
-	log.Print(conString)
 	<-time.After(time.Second * 4)
-	db, err := gorm.Open(config.GetDBType(), conString)
 
-	if err != nil {
-		log.Panic(err)
-	}
-	db.AutoMigrate(&model.Product{})
-
-	return db
+	return gorm.Open(config.GetDBType(), conString)
 }
 
 func GetDBInstance() *gorm.DB {
