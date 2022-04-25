@@ -3,10 +3,21 @@ package handler
 import (
 	"net/http"
 	"strconv"
+	"test-api/controller"
 	"test-api/model"
 
 	"github.com/labstack/echo/v4"
 )
+
+type Handler struct {
+	ProductController controller.ProductController
+}
+
+func NewHandler(pf controller.ProductController) *Handler {
+	return &Handler{
+		ProductController: pf,
+	}
+}
 
 func (h *Handler) GetAllProducts(c echo.Context) error {
 	products, err := h.ProductController.GetAllProducts()
