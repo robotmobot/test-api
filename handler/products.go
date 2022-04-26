@@ -29,15 +29,26 @@ func (h *Handler) GetAllProducts(c echo.Context) error {
 	return c.JSON(http.StatusOK, products)
 }
 
-func (h *Handler) GetProduct(c echo.Context) error {
+func (h *Handler) GetProductByID(c echo.Context) error {
 	id, _ := strconv.Atoi(c.Param("id"))
-	product, err := h.ProductController.GetProduct(id)
+	product, err := h.ProductController.GetProductByID(id)
 
 	if err != nil {
 		return c.JSON(http.StatusNoContent, err)
 	}
 
 	return c.JSON(http.StatusOK, product)
+}
+
+func (h *Handler) FindProduct(c echo.Context) error {
+	query := new(model.ProductFilter)
+	err := c.Bind(&query)
+	result, _ := h.ProductController.FindProduct(query)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, err)
+	}
+
+	return c.JSON(http.StatusOK, result)
 }
 
 func (h *Handler) CreateProduct(c echo.Context) error {

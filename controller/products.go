@@ -17,6 +17,7 @@ func NewProductController(db *gorm.DB) *ProductController {
 	}
 }
 
+//Lists all products
 func (pf *ProductController) GetAllProducts() ([]model.Product, error) {
 	products := []model.Product{}
 	response := pf.db.Find(&products)
@@ -28,15 +29,28 @@ func (pf *ProductController) GetAllProducts() ([]model.Product, error) {
 	return products, nil
 }
 
-func (pf *ProductController) GetProduct(id int) (*model.Product, error) {
+//List product provided by the ID
+func (pf *ProductController) GetProductByID(id int) (*model.Product, error) {
 	product := model.Product{}
 	err := pf.db.First(&product, id).Error
-	fmt.Println(err)
 	if err != nil {
 		return nil, err
 	}
 
 	return &product, nil
+}
+
+//find product by the name field
+func (pf *ProductController) FindProduct(filter *model.ProductFilter) ([]model.Product, error) {
+
+	product := []model.Product{}
+	err := pf.db.Where("name = ?", &filter.Name).Find(&product).Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	return product, nil
 }
 
 func (pf *ProductController) CreateProduct(p *model.Product) error {

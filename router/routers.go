@@ -15,7 +15,8 @@ func New(db *gorm.DB) *echo.Echo {
 	h := handler.NewHandler(*pf)
 
 	e.GET("/products", h.GetAllProducts)
-	e.GET("/products/:id", h.GetProduct)
+	e.GET("/products/:id", h.GetProductByID)
+	e.GET("/search", h.FindProduct)
 	e.POST("/products", h.CreateProduct)
 	e.PUT("/products/:id", h.UpdateProduct)
 	e.DELETE("/products/:id", h.DeleteProduct)

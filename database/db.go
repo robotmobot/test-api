@@ -3,10 +3,9 @@ package database
 import (
 	"log"
 	"sync"
-	"time"
-
 	config "test-api/config"
 	"test-api/model"
+	"time"
 
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
@@ -14,11 +13,11 @@ import (
 
 var DB *gorm.DB
 
-var once *sync.Once
+var once sync.Once
 
 func NewDB() *gorm.DB {
+	var err error
 	once.Do(func() {
-		var err error
 		DB, err = connectDB()
 		if err != nil {
 			log.Panic(err)
