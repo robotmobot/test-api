@@ -10,7 +10,8 @@ services:
                         POSTGRES_PASSWORD: password
                         POSTGRES_DB: test_data
                 container_name: testdb_postgres
-        test-api2:
+        test-api:
+                image: test_api_latest
                 build: 
                         context: .
                         dockerfile: Dockerfile

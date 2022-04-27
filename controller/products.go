@@ -2,6 +2,7 @@ package controller
 
 import (
 	"fmt"
+	"strings"
 	"test-api/model"
 
 	"github.com/jinzhu/gorm"
@@ -40,11 +41,27 @@ func (pf *ProductController) GetProductByID(id int) (*model.Product, error) {
 	return &product, nil
 }
 
-//find product by the name field
+//find product by creating query from request body
 func (pf *ProductController) FindProduct(filter *model.ProductFilter) ([]model.Product, error) {
-
 	product := []model.Product{}
-	err := pf.db.Where("name = ?", &filter.Name).Find(&product).Error
+	query, args := []string{}, []interface{}{}
+
+	//generate the query from request
+	if f := filter.Name; f != nil {
+		query, args = append(query, "name = ?"), append(args, *f)
+	}
+
+	if f := filter.Price; f != nil {
+		query, args = append(query, "price = ?"), append(args, *f)
+	}
+
+	if f := filter.IsCampaign; f != nil {
+		query, args = append(query, "is_campaign = ?"), append(args, *f)
+	}
+	//create the query
+	queryend := strings.Join(query, " AND ")
+
+	err := pf.db.Where(queryend, args...).Find(&product).Error
 
 	if err != nil {
 		return nil, err
