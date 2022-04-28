@@ -10,14 +10,16 @@ services:
                         POSTGRES_PASSWORD: password
                         POSTGRES_DB: test_data
                 container_name: testdb_postgres
-        test-api:
-                image: test_api_latest
-                build: 
-                        context: .
-                        dockerfile: Dockerfile
-                depends_on:
-                        - testdb_postgres
-                ports:
-                       - 1324:1324
-                tty: true
+#        test-api:
+#              image: test_api_latest
+#              build: 
+#                     context: .
+#                   args:
+#                   dockerfile: Dockerfile
+#                          migrate: $migrate
+#                depends_on:
+#                        - testdb_postgres
+#                ports:
+#                       - 1324:1324
+#                tty: true
                 

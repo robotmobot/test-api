@@ -1,4 +1,5 @@
 # syntax=docker/dockerfile:1
+ARG migrate
 
 FROM golang:1.18-alpine
 RUN apk add git
@@ -9,9 +10,8 @@ RUN go mod download
 COPY . .
 COPY *.go ./
 
-RUN go build -o test-api2 .
+RUN go build -o test-api .
 
 EXPOSE 1324
-
-CMD ["go","run","."]
-#CMD ["./test-api"]
+#CMD ["go","run","."]
+CMD ["./test-api"]

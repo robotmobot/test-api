@@ -1,8 +1,0 @@
-{
-    "DBUser"     : "user",
-	"DBPassword" : "password",
-	"DBName"     : "test_data",
-	"DBHost"     : "testdb_postgres",
-	"DBPort"     : "5432",
-	"DBType"     : "postgres"
-}

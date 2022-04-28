@@ -9,8 +9,15 @@ type Product struct {
 }
 
 type ProductFilter struct {
-	Name       *string  `json:"name"`
-	Detail     *string  `json:"detail"`
-	Price      *float64 `json:"price"`
-	IsCampaign *bool    `json:"is_campaign"`
+	Name       *string  `form:"name" json:"name"`
+	Detail     *string  `form:"detail" json:"detail"`
+	Price      *float64 `form:"price" json:"price"`
+	IsCampaign *bool    `form:"is_campaign" json:"is_campaign"`
+}
+
+type ProductFilter2 struct {
+	Name       string  `form:"name"`
+	Detail     string  `form:"detail"`
+	Price      float64 `form:"price"`
+	IsCampaign bool    `form:"is_campaign"`
 }

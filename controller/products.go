@@ -5,7 +5,7 @@ import (
 	"strings"
 	"test-api/model"
 
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 type ProductController struct {
@@ -52,7 +52,7 @@ func (pf *ProductController) FindProduct(filter *model.ProductFilter) ([]model.P
 	}
 
 	if f := filter.Price; f != nil {
-		query, args = append(query, "price = ?"), append(args, *f)
+		query, args = append(query, "price >= ?"), append(args, *f)
 	}
 
 	if f := filter.IsCampaign; f != nil {
@@ -60,7 +60,32 @@ func (pf *ProductController) FindProduct(filter *model.ProductFilter) ([]model.P
 	}
 	//create the query
 	queryend := strings.Join(query, " AND ")
+	err := pf.db.Where(queryend, args...).Find(&product).Error
 
+	if err != nil {
+		return nil, err
+	}
+
+	return product, nil
+}
+
+func (pf *ProductController) FindProductQueryParams(filter *model.ProductFilter2) ([]model.Product, error) {
+	product := []model.Product{}
+	query, args := []string{}, []interface{}{}
+	fmt.Println(&filter)
+	if f := &filter.Name; f != nil {
+		query, args = append(query, "name = ?"), append(args, f)
+	}
+
+	if f := &filter.Price; f != nil {
+		query, args = append(query, "price >= ?"), append(args, f)
+	}
+
+	if f := &filter.IsCampaign; f != nil {
+		query, args = append(query, "is_campaign = ?"), append(args, f)
+	}
+
+	queryend := strings.Join(query, " AND ")
 	err := pf.db.Where(queryend, args...).Find(&product).Error
 
 	if err != nil {
