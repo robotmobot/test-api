@@ -3,6 +3,7 @@ package database
 import (
 	"flag"
 	"log"
+	"math/rand"
 	"sync"
 	config "test-api/config"
 	"test-api/model"
@@ -30,6 +31,7 @@ func NewDB() *gorm.DB {
 		}
 		if *Migrate {
 			DB.AutoMigrate(&model.Product{})
+			DB.Create(seedDb())
 
 		}
 	})
@@ -49,15 +51,16 @@ func GetDBInstance() *gorm.DB {
 	return DB
 }
 
-/*Trying to randomize data
+//Trying to randomize seed data
 func seedDb() []model.Product {
-
+	randomName := []string{"Car", "Phone", "Pc", "Laptop", "Dress", "Shirt",
+		"Perfume", "TV", "Refrigerator", "Oven", "Washing Machine",
+		"Dishwashing Machine"}
 	products := make([]model.Product, 50)
 
 	for i := range products {
-		products[i] = model.Product{ID: i, Name: "Product" , Detail: "Detail for Product" , Price: rand.Float64() * (100 - 2), IsCampaign: true}
+		products[i] = model.Product{ID: i, Name: randomName[rand.Intn(len(randomName))], Detail: "Detail for " + randomName[rand.Intn(len(randomName))], Price: rand.Float64() * (100 - 2), IsCampaign: true}
 	}
 
 	return products
 }
-*/
