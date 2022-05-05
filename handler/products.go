@@ -53,6 +53,7 @@ func (h *Handler) FindProduct(c echo.Context) error {
 }
 func (h *Handler) FindProductQueryParams(c echo.Context) error {
 	filter := new(model.ProductFilter2)
+	c.Bind(filter)
 	err := echo.QueryParamsBinder(c).String("name", &filter.Name).String("detail", &filter.Detail).Float64("price", &filter.Price).Bool("is_campaign", &filter.IsCampaign).BindError()
 
 	if err != nil {
@@ -105,4 +106,19 @@ func (h *Handler) DeleteProduct(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, err)
+}
+func (h *Handler) BatchCreateProduct(c echo.Context) error {
+	var product = []model.Product{}
+
+	err := c.Bind(&product)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, err)
+	}
+
+	errCreate := h.ProductController.BatchCreateProduct(product)
+	if errCreate != nil {
+		return c.JSON(http.StatusConflict, errCreate)
+	}
+
+	return c.JSON(http.StatusOK, product)
 }

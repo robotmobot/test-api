@@ -72,7 +72,7 @@ func (pf *ProductController) FindProduct(filter *model.ProductFilter) ([]model.P
 func (pf *ProductController) FindProductQueryParams(filter *model.ProductFilter2) ([]model.Product, error) {
 	product := []model.Product{}
 	query, args := []string{}, []interface{}{}
-	fmt.Println(&filter)
+	fmt.Println(filter)
 	if f := &filter.Name; f != nil {
 		query, args = append(query, "name = ?"), append(args, f)
 	}
@@ -84,7 +84,7 @@ func (pf *ProductController) FindProductQueryParams(filter *model.ProductFilter2
 	if f := &filter.IsCampaign; f != nil {
 		query, args = append(query, "is_campaign = ?"), append(args, f)
 	}
-
+	fmt.Println(args)
 	queryend := strings.Join(query, " AND ")
 	err := pf.db.Where(queryend, args...).Find(&product).Error
 
@@ -98,6 +98,14 @@ func (pf *ProductController) FindProductQueryParams(filter *model.ProductFilter2
 func (pf *ProductController) CreateProduct(p *model.Product) error {
 	err := pf.db.Create(&p).Error
 	fmt.Println(err)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+func (pf *ProductController) BatchCreateProduct(p []model.Product) error {
+	err := pf.db.Create(&p).Error
 	if err != nil {
 		return err
 	}
