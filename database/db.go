@@ -59,7 +59,7 @@ func seedDb() []model.Product {
 	products := make([]model.Product, 50)
 
 	for i := range products {
-		products[i] = model.Product{ID: i, Name: randomName[rand.Intn(len(randomName))], Detail: "Detail for " + randomName[rand.Intn(len(randomName))], Price: rand.Float64() * (100 - 2), IsCampaign: true}
+		products[i] = model.Product{Name: randomName[rand.Intn(len(randomName))], Detail: "Detail for " + randomName[rand.Intn(len(randomName))], Price: rand.Float64() * (100 - 2), IsCampaign: rand.Uint64()&(1<<63) == 0}
 	}
 
 	return products
