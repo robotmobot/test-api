@@ -3,6 +3,7 @@ package handler
 import (
 	"net/http"
 	"strconv"
+	"sync"
 	"test-api/controller"
 	"test-api/model"
 
@@ -11,6 +12,7 @@ import (
 
 type Handler struct {
 	ProductController controller.ProductController
+	wg                sync.WaitGroup
 }
 
 func NewHandler(pf controller.ProductController) *Handler {
@@ -107,18 +109,29 @@ func (h *Handler) DeleteProduct(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, err)
 }
-func (h *Handler) BatchCreateProduct(c echo.Context) error {
-	var product = []model.Product{}
 
-	err := c.Bind(&product)
+func (h *Handler) BatchCreateProduct(c echo.Context) error {
+	products := []model.Product{}
+
+	err := c.Bind(&products)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, err)
 	}
 
-	errCreate := h.ProductController.BatchCreateProduct(product)
-	if errCreate != nil {
-		return c.JSON(http.StatusConflict, errCreate)
+	for i := 0; i < len(products); i++ {
+		product := products[i]
+		h.wg.Add(1)
+
+		go func(product model.Product) {
+			defer h.wg.Done()
+			err := h.ProductController.CreateProduct(&product)
+			if err != nil {
+				c.Logger().Error(err)
+			}
+		}(product)
+
 	}
 
-	return c.JSON(http.StatusOK, product)
+	return c.JSON(http.StatusOK, products)
+
 }

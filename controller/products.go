@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"strings"
 	"test-api/model"
 
@@ -58,7 +57,7 @@ func (pf *ProductController) FindProduct(filter *model.ProductFilter) ([]model.P
 	if f := filter.IsCampaign; f != nil {
 		query, args = append(query, "is_campaign = ?"), append(args, *f)
 	}
-	//create the query
+	//create the query string
 	queryend := strings.Join(query, " AND ")
 	err := pf.db.Where(queryend, args...).Find(&product).Error
 
@@ -69,10 +68,12 @@ func (pf *ProductController) FindProduct(filter *model.ProductFilter) ([]model.P
 	return product, nil
 }
 
+//find product from queryparams/url
 func (pf *ProductController) FindProductQueryParams(filter *model.ProductFilter2) ([]model.Product, error) {
 	product := []model.Product{}
 	query, args := []string{}, []interface{}{}
-	fmt.Println(filter)
+
+	//generate the query from paramsbinder
 	if f := &filter.Name; f != nil {
 		query, args = append(query, "name = ?"), append(args, f)
 	}
@@ -84,7 +85,8 @@ func (pf *ProductController) FindProductQueryParams(filter *model.ProductFilter2
 	if f := &filter.IsCampaign; f != nil {
 		query, args = append(query, "is_campaign = ?"), append(args, f)
 	}
-	fmt.Println(args)
+
+	//create the query string
 	queryend := strings.Join(query, " AND ")
 	err := pf.db.Where(queryend, args...).Find(&product).Error
 
@@ -95,28 +97,34 @@ func (pf *ProductController) FindProductQueryParams(filter *model.ProductFilter2
 	return product, nil
 }
 
+//Creates one product from the request body
 func (pf *ProductController) CreateProduct(p *model.Product) error {
 	err := pf.db.Create(&p).Error
-	fmt.Println(err)
 	if err != nil {
 		return err
 	}
 
 	return nil
 }
-func (pf *ProductController) BatchCreateProduct(p []model.Product) error {
+
+//Creates multiple products from the request body
+//takes array of model.Product
+//**Maybe put a limit to number of insert
+/*func (pf *ProductController) BatchCreateProduct(p []model.Product) error {
 	err := pf.db.Create(&p).Error
 	if err != nil {
 		return err
 	}
 
 	return nil
-}
+}*/
 
+//Takes the id of product and fields to update
+//Updates the field of product of that id
 func (pf *ProductController) UpdateProduct(id int, p *model.Product) (*model.Product, error) {
 	product := model.Product{}
 	err := pf.db.First(&product, id).Error
-	fmt.Println(err)
+
 	if err != nil {
 		return nil, err
 	}
@@ -126,10 +134,11 @@ func (pf *ProductController) UpdateProduct(id int, p *model.Product) (*model.Pro
 	return &product, nil
 }
 
+//Deletes the product from the request /products/:id
 func (pf *ProductController) DeleteProduct(id int) error {
 	product := model.Product{}
 	err := pf.db.First(&product, id).Error
-	fmt.Println(err)
+
 	if err != nil {
 		return err
 	}

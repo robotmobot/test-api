@@ -1,7 +1,6 @@
 package main
 
 import (
-	"net/http"
 	"test-api/database"
 	"test-api/router"
 )
@@ -11,6 +10,6 @@ func main() {
 	r := router.New(db)
 
 	r.Logger.Fatal(r.Start("localhost:1324"))
-	http.ListenAndServe("localhost:1324", r)
+	//http.ListenAndServe("localhost:1324", r)
 
 }

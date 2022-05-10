@@ -1,7 +1,7 @@
 package model
 
 type Product struct {
-	ID         int     `json:"id"`
+	ID         uint    `json:"id" gorm:"primary_key,autoIncrement:1"`
 	Name       string  `json:"name"`
 	Detail     string  `json:"detail"`
 	Price      float64 `json:"price"`
@@ -9,7 +9,7 @@ type Product struct {
 }
 
 type ProductFilter struct {
-	Name       *string  `form:"name" json:"name"`
+	Name       *string  `form:"name" json:"name,omitempty"`
 	Detail     *string  `form:"detail" json:"detail"`
 	Price      *float64 `form:"price" json:"price"`
 	IsCampaign *bool    `form:"is_campaign" json:"is_campaign"`
