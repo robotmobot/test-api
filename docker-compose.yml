@@ -1,7 +1,8 @@
-version: '3.6'
+version: '3.8'
 services:
-        testdb_postgres:
-                image: postgres
+        postgres:
+                container_name: testdb_postgres
+                image: postgres:14.2-alpine
                 restart: always
                 ports:
                         - 5432:5432
@@ -9,7 +10,6 @@ services:
                         POSTGRES_USER: user
                         POSTGRES_PASSWORD: password
                         POSTGRES_DB: test_data
-                container_name: testdb_postgres
 #        test-api:
 #              image: test_api_latest
 #              build: 

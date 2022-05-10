@@ -19,7 +19,7 @@ func New(db *gorm.DB) *echo.Echo {
 	e.GET("/search", h.FindProduct)
 	e.GET("/searchparams", h.FindProductQueryParams)
 	e.POST("/products", h.CreateProduct)
-	e.POST("/batchproducts", h.BulkCreateProduct)
+	e.POST("/batchproducts", h.BatchCreateProduct)
 	e.PUT("/products/:id", h.UpdateProduct)
 	e.DELETE("/products/:id", h.DeleteProduct)
 

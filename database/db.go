@@ -13,15 +13,17 @@ import (
 	"gorm.io/gorm"
 )
 
-var DB *gorm.DB
-
-var once sync.Once
+var (
+	DB   *gorm.DB
+	once sync.Once
+)
 
 var Migrate = flag.Bool("m", false, "migrates model to db")
 
 func init() {
 	flag.Parse()
 }
+
 func NewDB() *gorm.DB {
 	var err error
 	once.Do(func() {
@@ -53,7 +55,7 @@ func GetDBInstance() *gorm.DB {
 
 //Trying to randomize seed data
 func seedDb() []model.Product {
-	randomName := []string{"Car", "Phone", "Pc", "Laptop", "Dress", "Shirt",
+	randomName := [...]string{"Car", "Phone", "Pc", "Laptop", "Dress", "Shirt",
 		"Perfume", "TV", "Refrigerator", "Oven", "Washing Machine",
 		"Dishwashing Machine"}
 	products := make([]model.Product, 50)
