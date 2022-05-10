@@ -6,6 +6,7 @@ import (
 	"sync"
 	"test-api/controller"
 	"test-api/model"
+	"time"
 
 	"github.com/labstack/echo/v4"
 )
@@ -112,26 +113,33 @@ func (h *Handler) DeleteProduct(c echo.Context) error {
 
 func (h *Handler) BatchCreateProduct(c echo.Context) error {
 	products := []model.Product{}
-
+	//ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(1*time.Millisecond))
+	done := make(chan bool, 1)
+	done <- true
+	//defer cancel()
 	err := c.Bind(&products)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, err)
 	}
 
+	h.wg.Add(len(products))
 	for i := 0; i < len(products); i++ {
 		product := products[i]
-		h.wg.Add(1)
-
-		go func(product model.Product) {
-			defer h.wg.Done()
-			err := h.ProductController.CreateProduct(&product)
-			if err != nil {
-				c.Logger().Error(err)
-			}
-		}(product)
-
+		select {
+		case <-done:
+			go func(product model.Product) {
+				err := h.ProductController.CreateProduct(&product)
+				if err != nil {
+					c.Logger().Error(err)
+				}
+				h.wg.Done()
+				done <- true
+			}(product)
+		case <-time.After(1000 * time.Millisecond):
+			return c.JSON(http.StatusRequestTimeout, "timeout")
+		}
 	}
+	h.wg.Wait()
 
 	return c.JSON(http.StatusOK, products)
-
 }
