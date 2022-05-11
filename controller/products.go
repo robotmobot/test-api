@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"strings"
 	"test-api/model"
 
@@ -138,8 +139,9 @@ func (pf *ProductController) UpdateProduct(id int, p *model.Product) (*model.Pro
 func (pf *ProductController) DeleteProduct(id int) error {
 	product := model.Product{}
 	err := pf.db.First(&product, id).Error
-
+	fmt.Println(product)
 	if err != nil {
+		fmt.Println("check")
 		return err
 	}
 

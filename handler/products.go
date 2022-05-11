@@ -123,8 +123,7 @@ func (h *Handler) BatchCreateProduct(c echo.Context) error {
 	}
 
 	h.wg.Add(len(products))
-	for i := 0; i < len(products); i++ {
-		product := products[i]
+	for _, product := range products {
 		select {
 		case <-done:
 			go func(product model.Product) {
