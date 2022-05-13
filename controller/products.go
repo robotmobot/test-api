@@ -4,26 +4,16 @@ import (
 	"fmt"
 	"strings"
 	"test-api/model"
-
-	"gorm.io/gorm"
 )
 
-type ProductsRepo interface {
-	GetAllProducts() ([]model.Product, error)
-}
-
 type ProductController struct {
-	db gorm.DB
+	db DbRepo
 }
 
-func NewProductController(db gorm.DB) *ProductController {
+func NewProductController(db DbRepo) *ProductController {
 	return &ProductController{
 		db: db,
 	}
-}
-
-func GetAllProducts(repo ProductsRepo) {
-	repo.GetAllProducts()
 }
 
 func (pf *ProductController) GetAllProducts() ([]model.Product, error) {

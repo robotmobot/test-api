@@ -8,7 +8,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func New(db gorm.DB, repo controller.ProductsRepo) *echo.Echo {
+func New(db gorm.DB) *echo.Echo {
 	e := echo.New()
 
 	pf := controller.NewProductController(db)

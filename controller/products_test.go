@@ -3,24 +3,25 @@ package controller_test
 import (
 	"test-api/controller"
 	"test-api/mocks"
-	"test-api/model"
 	"testing"
 
 	"github.com/golang/mock/gomock"
+	"gorm.io/gorm"
 )
 
 func TestGetAllProducts(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	products := []model.Product{
-		{
-			ID:   1,
-			Name: "test",
-		},
-	}
-	mockProductRepo := mocks.NewMockProductsRepo(mockCtrl)
+	mocks := mocks.NewMockDbRepo(mockCtrl)
+	tempCall := gorm.DB{}
+	mocks.EXPECT().Find(gomock.Any()).Return(&tempCall)
+	controller := controller.NewProductController(mocks)
 
-	mockProductRepo.EXPECT().GetAllProducts().Return(products, nil)
-	controller.GetAllProducts(mockProductRepo)
+	products, err := controller.GetAllProducts()
+	if err != nil {
+		t.FailNow()
+	}
+	if len(products) < 1 {
+		t.FailNow()
+	}
 
 }
