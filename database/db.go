@@ -20,9 +20,9 @@ var (
 
 var Migrate = flag.Bool("m", false, "migrates model to db")
 
-func init() {
+/*func init() {
 	flag.Parse()
-}
+}*/
 
 func NewDB() *gorm.DB {
 	var err error

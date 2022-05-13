@@ -7,6 +7,7 @@ import (
 
 func main() {
 	db := database.NewDB()
+
 	r := router.New(db)
 
 	r.Logger.Fatal(r.Start("localhost:1324"))

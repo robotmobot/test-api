@@ -8,17 +8,24 @@ import (
 	"gorm.io/gorm"
 )
 
-type ProductController struct {
-	db *gorm.DB
+type ProductsRepo interface {
+	GetAllProducts() ([]model.Product, error)
 }
 
-func NewProductController(db *gorm.DB) *ProductController {
+type ProductController struct {
+	db gorm.DB
+}
+
+func NewProductController(db gorm.DB) *ProductController {
 	return &ProductController{
 		db: db,
 	}
 }
 
-//Lists all products
+func GetAllProducts(repo ProductsRepo) {
+	repo.GetAllProducts()
+}
+
 func (pf *ProductController) GetAllProducts() ([]model.Product, error) {
 	products := []model.Product{}
 	response := pf.db.Find(&products)
@@ -107,18 +114,6 @@ func (pf *ProductController) CreateProduct(p *model.Product) error {
 
 	return nil
 }
-
-//Creates multiple products from the request body
-//takes array of model.Product
-//**Maybe put a limit to number of insert
-/*func (pf *ProductController) BatchCreateProduct(p []model.Product) error {
-	err := pf.db.Create(&p).Error
-	if err != nil {
-		return err
-	}
-
-	return nil
-}*/
 
 //Takes the id of product and fields to update
 //Updates the field of product of that id
