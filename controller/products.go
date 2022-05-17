@@ -2,7 +2,6 @@ package controller
 
 import (
 	"fmt"
-	"strings"
 	"test-api/model"
 )
 
@@ -39,26 +38,10 @@ func (pf *ProductController) GetProductByID(id int) (*model.Product, error) {
 }
 
 //find product by creating query from request body
-func (pf *ProductController) FindProduct(filter *model.ProductFilter) ([]model.Product, error) {
+func (pf *ProductController) FindProduct(filter model.ProductFilter) ([]model.Product, error) {
 	product := []model.Product{}
-	query, args := []string{}, []interface{}{}
 
-	//generate the query from request
-	if f := filter.Name; f != nil {
-		query, args = append(query, "name = ?"), append(args, *f)
-	}
-
-	if f := filter.Price; f != nil {
-		query, args = append(query, "price >= ?"), append(args, *f)
-	}
-
-	if f := filter.IsCampaign; f != nil {
-		query, args = append(query, "is_campaign = ?"), append(args, *f)
-	}
-	//create the query string
-	queryend := strings.Join(query, " AND ")
-	err := pf.db.Where(queryend, args...).Find(&product).Error
-
+	err := pf.db.Where("name = ? AND price >= ? AND is_campaign = ?", *filter.Name, *filter.Price, *filter.IsCampaign).Find(&product).Error
 	if err != nil {
 		return nil, err
 	}
@@ -69,24 +52,7 @@ func (pf *ProductController) FindProduct(filter *model.ProductFilter) ([]model.P
 //find product from queryparams/url
 func (pf *ProductController) FindProductQueryParams(filter *model.ProductFilter2) ([]model.Product, error) {
 	product := []model.Product{}
-	query, args := []string{}, []interface{}{}
-
-	//generate the query from paramsbinder
-	if f := &filter.Name; f != nil {
-		query, args = append(query, "name = ?"), append(args, f)
-	}
-
-	if f := &filter.Price; f != nil {
-		query, args = append(query, "price >= ?"), append(args, f)
-	}
-
-	if f := &filter.IsCampaign; f != nil {
-		query, args = append(query, "is_campaign = ?"), append(args, f)
-	}
-
-	//create the query string
-	queryend := strings.Join(query, " AND ")
-	err := pf.db.Where(queryend, args...).Find(&product).Error
+	err := pf.db.Where("name = ? AND price >= ? AND is_campaign = ?", filter.Name, filter.Price, filter.IsCampaign).Find(&product).Error
 
 	if err != nil {
 		return nil, err

@@ -46,7 +46,7 @@ func (h *Handler) GetProductByID(c echo.Context) error {
 func (h *Handler) FindProduct(c echo.Context) error {
 	query := new(model.ProductFilter)
 	err := c.Bind(&query)
-	result, _ := h.ProductController.FindProduct(query)
+	result, _ := h.ProductController.FindProduct(*query)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, err)
 	}
@@ -56,8 +56,11 @@ func (h *Handler) FindProduct(c echo.Context) error {
 }
 func (h *Handler) FindProductQueryParams(c echo.Context) error {
 	filter := new(model.ProductFilter2)
-	c.Bind(filter)
-	err := echo.QueryParamsBinder(c).String("name", &filter.Name).String("detail", &filter.Detail).Float64("price", &filter.Price).Bool("is_campaign", &filter.IsCampaign).BindError()
+	err := c.Bind(filter)
+	if err != nil {
+		return err
+	}
+	err = echo.QueryParamsBinder(c).String("name", &filter.Name).String("detail", &filter.Detail).Float64("price", &filter.Price).Bool("is_campaign", &filter.IsCampaign).BindError()
 
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, err)
