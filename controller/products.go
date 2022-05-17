@@ -6,18 +6,20 @@ import (
 )
 
 type ProductController struct {
-	db DbRepo
+	Db DbRepo
 }
 
 func NewProductController(db DbRepo) *ProductController {
 	return &ProductController{
-		db: db,
+		Db: db,
 	}
 }
 
+//GetAllProducts
+//List all products from the table
 func (pf *ProductController) GetAllProducts() ([]model.Product, error) {
-	products := []model.Product{}
-	response := pf.db.Find(&products)
+	var products []model.Product
+	response := pf.Db.Find(&products)
 
 	if response.Error != nil {
 		return nil, response.Error
@@ -26,10 +28,11 @@ func (pf *ProductController) GetAllProducts() ([]model.Product, error) {
 	return products, nil
 }
 
+// GetProductByID
 //List product provided by the ID
 func (pf *ProductController) GetProductByID(id int) (*model.Product, error) {
 	product := model.Product{}
-	err := pf.db.First(&product, id).Error
+	err := pf.Db.First(&product, id).Error
 	if err != nil {
 		return nil, err
 	}
@@ -37,11 +40,12 @@ func (pf *ProductController) GetProductByID(id int) (*model.Product, error) {
 	return &product, nil
 }
 
+// FindProduct
 //find product by creating query from request body
 func (pf *ProductController) FindProduct(filter model.ProductFilter) ([]model.Product, error) {
 	product := []model.Product{}
 
-	err := pf.db.Where("name = ? AND price >= ? AND is_campaign = ?", *filter.Name, *filter.Price, *filter.IsCampaign).Find(&product).Error
+	err := pf.Db.Where("name = ? AND price >= ? AND is_campaign = ?", *filter.Name, *filter.Price, *filter.IsCampaign).Find(&product).Error
 	if err != nil {
 		return nil, err
 	}
@@ -49,10 +53,11 @@ func (pf *ProductController) FindProduct(filter model.ProductFilter) ([]model.Pr
 	return product, nil
 }
 
-//find product from queryparams/url
+// FindProductQueryParams
+//find product from query params/url
 func (pf *ProductController) FindProductQueryParams(filter *model.ProductFilter2) ([]model.Product, error) {
 	product := []model.Product{}
-	err := pf.db.Where("name = ? AND price >= ? AND is_campaign = ?", filter.Name, filter.Price, filter.IsCampaign).Find(&product).Error
+	err := pf.Db.Where("name = ? AND price >= ? AND is_campaign = ?", filter.Name, filter.Price, filter.IsCampaign).Find(&product).Error
 
 	if err != nil {
 		return nil, err
@@ -61,9 +66,10 @@ func (pf *ProductController) FindProductQueryParams(filter *model.ProductFilter2
 	return product, nil
 }
 
+// CreateProduct
 //Creates one product from the request body
 func (pf *ProductController) CreateProduct(p *model.Product) error {
-	err := pf.db.Create(&p).Error
+	err := pf.Db.Create(&p).Error
 	if err != nil {
 		return err
 	}
@@ -71,32 +77,33 @@ func (pf *ProductController) CreateProduct(p *model.Product) error {
 	return nil
 }
 
-//Takes the id of product and fields to update
+//UpdateProduct Takes the id of product and fields to update
 //Updates the field of product of that id
 func (pf *ProductController) UpdateProduct(id int, p *model.Product) (*model.Product, error) {
 	product := model.Product{}
-	err := pf.db.First(&product, id).Error
+	err := pf.Db.First(&product, id).Error
 
 	if err != nil {
 		return nil, err
 	}
 
-	pf.db.Model(&product).Updates(model.Product{ID: p.ID, Name: p.Name})
+	pf.Db.Model(&product).Updates(model.Product{ID: p.ID, Name: p.Name})
 
 	return &product, nil
 }
 
+// DeleteProduct
 //Deletes the product from the request /products/:id
 func (pf *ProductController) DeleteProduct(id int) error {
 	product := model.Product{}
-	err := pf.db.First(&product, id).Error
+	err := pf.Db.First(&product, id).Error
 	fmt.Println(product)
 	if err != nil {
 		fmt.Println("check")
 		return err
 	}
 
-	pf.db.Delete(&product)
+	pf.Db.Delete(&product)
 
 	return err
 }
