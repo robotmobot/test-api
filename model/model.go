@@ -1,7 +1,7 @@
 package model
 
 type Product struct {
-	ID         uint    `json:"id" gorm:"primary_key,autoIncrement:1"`
+	ID         int     `json:"id" gorm:"primary_key,autoIncrement:1"`
 	Name       string  `json:"name"`
 	Detail     string  `json:"detail"`
 	Price      float64 `json:"price"`

@@ -59,3 +59,15 @@ func TestGetByID_Success(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, res, products)
 }
+func TestCreateProduct(t *testing.T) {
+	product := model.Product{Name: "test"}
+	mockDB := SetupMockDb()
+	mockDB.Mock.ExpectBegin()
+	mockRows := sqlmock.NewRows([]string{"name"}).AddRow("test")
+	mockDB.Mock.ExpectCommit()
+	res := mockDB.Mock.ExpectQuery(
+		regexp.QuoteMeta("INSERT INTO `products` (`name`) VALUES (?)")).WithArgs(product.Name).WillReturnRows(mockRows)
+
+	err := mockDB.Repo.CreateProduct(&product)
+	require.Equal(t, err, res)
+}

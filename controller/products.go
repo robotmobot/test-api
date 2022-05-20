@@ -19,10 +19,10 @@ func NewProductController(db DbRepo) *ProductController {
 //List all products from the table
 func (pf *ProductController) GetAllProducts() ([]model.Product, error) {
 	var products []model.Product
-	response := pf.Db.Find(&products)
+	err := pf.Db.Find(&products).Error
 
-	if response.Error != nil {
-		return nil, response.Error
+	if err != nil {
+		return nil, err
 	}
 
 	return products, nil

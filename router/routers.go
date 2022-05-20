@@ -11,8 +11,9 @@ import (
 func New(db gorm.DB) *echo.Echo {
 	e := echo.New()
 
-	pf := controller.NewProductController(&db)
-	h := handler.NewHandler(*pf)
+	pc := controller.NewProductController(&db)
+	pf := handler.Repo(pc)
+	h := handler.NewHandler(pf)
 
 	e.GET("/products", h.GetAllProducts)
 	e.GET("/products/:id", h.GetProductByID)

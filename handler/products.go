@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"strconv"
 	"sync"
-	"test-api/controller"
 	"test-api/model"
 	"time"
 
@@ -12,11 +11,11 @@ import (
 )
 
 type Handler struct {
-	ProductController controller.ProductController
+	ProductController Repo
 	wg                sync.WaitGroup
 }
 
-func NewHandler(pf controller.ProductController) *Handler {
+func NewHandler(pf Repo) *Handler {
 	return &Handler{
 		ProductController: pf,
 	}
@@ -37,7 +36,7 @@ func (h *Handler) GetProductByID(c echo.Context) error {
 	product, err := h.ProductController.GetProductByID(id)
 
 	if err != nil {
-		return c.JSON(http.StatusNoContent, err)
+		return c.JSON(http.StatusBadRequest, err)
 	}
 
 	return c.JSON(http.StatusOK, product)
@@ -116,10 +115,10 @@ func (h *Handler) DeleteProduct(c echo.Context) error {
 
 func (h *Handler) BatchCreateProduct(c echo.Context) error {
 	products := []model.Product{}
-	//ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(1*time.Millisecond))
+
 	done := make(chan bool, 1)
 	done <- true
-	//defer cancel()
+
 	err := c.Bind(&products)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, err)
