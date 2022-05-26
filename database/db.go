@@ -20,9 +20,9 @@ var (
 
 var Migrate = flag.Bool("m", false, "migrates model to db")
 
-/*func init() {
+func init() {
 	flag.Parse()
-}*/
+}
 
 func NewDB() *gorm.DB {
 	var err error
@@ -49,10 +49,6 @@ func connectDB() (*gorm.DB, error) {
 	return gorm.Open(postgres.Open(conString))
 }
 
-func GetDBInstance() *gorm.DB {
-	return DB
-}
-
 //Trying to randomize seed data
 func seedDb() []model.Product {
 	randomName := [...]string{"Car", "Phone", "Pc", "Laptop", "Dress", "Shirt",
@@ -61,7 +57,7 @@ func seedDb() []model.Product {
 	products := make([]model.Product, 50)
 
 	for i := range products {
-		products[i] = model.Product{Name: randomName[rand.Intn(len(randomName))], Detail: "Detail for " + randomName[rand.Intn(len(randomName))], Price: rand.Float64() * (100 - 2), IsCampaign: rand.Uint64()&(1<<63) == 0}
+		products[i] = model.Product{Name: randomName[rand.Intn(len(randomName))], Detail: "Detail for " + randomName[rand.Intn(len(randomName))], Price: rand.Float32() * (100 - 2), IsCampaign: rand.Uint64()&(1<<63) == 0}
 	}
 
 	return products

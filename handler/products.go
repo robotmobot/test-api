@@ -33,7 +33,7 @@ func (h *Handler) GetAllProducts(c echo.Context) error {
 
 func (h *Handler) GetProductByID(c echo.Context) error {
 	id, _ := strconv.Atoi(c.Param("id"))
-	product, err := h.ProductController.GetProductByID(id)
+	product, err := h.ProductController.GetProductByID(int32(id))
 
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, err)
@@ -59,7 +59,7 @@ func (h *Handler) FindProductQueryParams(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	err = echo.QueryParamsBinder(c).String("name", &filter.Name).String("detail", &filter.Detail).Float64("price", &filter.Price).Bool("is_campaign", &filter.IsCampaign).BindError()
+	err = echo.QueryParamsBinder(c).String("name", &filter.Name).String("detail", &filter.Detail).Float32("price", &filter.Price).Bool("is_campaign", &filter.IsCampaign).BindError()
 
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, err)
@@ -94,7 +94,7 @@ func (h *Handler) UpdateProduct(c echo.Context) error {
 	}
 
 	id, _ := strconv.Atoi(c.Param("id"))
-	response, errUpdate := h.ProductController.UpdateProduct(id, &product)
+	response, errUpdate := h.ProductController.UpdateProduct(int32(id), &product)
 	if errUpdate != nil {
 		return c.JSON(http.StatusConflict, errUpdate)
 	}
@@ -104,7 +104,7 @@ func (h *Handler) UpdateProduct(c echo.Context) error {
 
 func (h *Handler) DeleteProduct(c echo.Context) error {
 	id, _ := strconv.Atoi(c.Param("id"))
-	err := h.ProductController.DeleteProduct((id))
+	err := h.ProductController.DeleteProduct(int32(id))
 
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, err)

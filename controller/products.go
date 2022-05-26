@@ -30,7 +30,7 @@ func (pf *ProductController) GetAllProducts() ([]model.Product, error) {
 
 // GetProductByID
 //List product provided by the ID
-func (pf *ProductController) GetProductByID(id int) (*model.Product, error) {
+func (pf *ProductController) GetProductByID(id int32) (*model.Product, error) {
 	product := model.Product{}
 	err := pf.Db.First(&product, id).Error
 	if err != nil {
@@ -79,7 +79,7 @@ func (pf *ProductController) CreateProduct(p *model.Product) error {
 
 //UpdateProduct Takes the id of product and fields to update
 //Updates the field of product of that id
-func (pf *ProductController) UpdateProduct(id int, p *model.Product) (*model.Product, error) {
+func (pf *ProductController) UpdateProduct(id int32, p *model.Product) (*model.Product, error) {
 	product := model.Product{}
 	err := pf.Db.First(&product, id).Error
 
@@ -94,7 +94,7 @@ func (pf *ProductController) UpdateProduct(id int, p *model.Product) (*model.Pro
 
 // DeleteProduct
 //Deletes the product from the request /products/:id
-func (pf *ProductController) DeleteProduct(id int) error {
+func (pf *ProductController) DeleteProduct(id int32) error {
 	product := model.Product{}
 	err := pf.Db.First(&product, id).Error
 	fmt.Println(product)

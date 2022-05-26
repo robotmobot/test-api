@@ -1,0 +1,26 @@
+syntax = "proto3";
+import "google/protobuf/empty.proto";
+package productService;
+
+option go_package = ".;productService";
+
+
+message Product{
+  int32 id = 1;
+  string name = 2;
+  string detail = 3;
+  float price = 4;
+  bool is_campaign = 5;
+}
+
+message ID{
+  int32 id = 1;
+}
+
+service ProductService{
+  rpc GetAllProducts (google.protobuf.Empty) returns (stream Product){};
+  rpc GetProductByID (ID) returns (Product){};
+  rpc CreateProduct (Product) returns (Product){};
+  rpc UpdateProduct (Product) returns (Product){};
+  rpc DeleteProduct (ID) returns (Product){};
+}
