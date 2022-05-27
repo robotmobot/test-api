@@ -1,5 +1,9 @@
 package model
 
+import (
+	"test-api/proto"
+)
+
 type Product struct {
 	ID         int32   `json:"id" gorm:"primary_key,autoIncrement:1"`
 	Name       string  `json:"name"`
@@ -20,4 +24,14 @@ type ProductFilter2 struct {
 	Detail     string  `form:"detail" json:"detail"`
 	Price      float32 `form:"price" json:"price"`
 	IsCampaign bool    `form:"is_campaign" json:"is_campaign"`
+}
+
+func (p Product) ToProto() *productService.Product {
+	return &productService.Product{
+		Id:         p.ID,
+		Name:       p.Name,
+		Detail:     p.Detail,
+		Price:      p.Price,
+		IsCampaign: p.IsCampaign,
+	}
 }

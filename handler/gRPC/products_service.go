@@ -1,4 +1,4 @@
-package service
+package gRPC
 
 import (
 	"golang.org/x/net/context"
@@ -7,8 +7,8 @@ import (
 	"log"
 	"net"
 	"test-api/controller"
-	"test-api/gRPC/proto"
 	"test-api/model"
+	"test-api/proto"
 )
 
 type grpcService struct {
@@ -24,13 +24,17 @@ func NewGrpcService(pc controller.ProductController) *grpcService {
 
 }
 
+type ProductService_GetAllProductsServer struct {
+	products []*model.Product
+}
+
 func (g *grpcService) GetProductByID(ctx context.Context, id *productService.ID) (*productService.Product, error) {
 	product, err := g.pc.GetProductByID(id.GetId())
 	if err != nil {
 		return nil, err
 	}
 
-	return &productService.Product{Name: product.Name, Detail: product.Detail}, nil
+	return product.ToProto(), nil
 }
 
 func (g *grpcService) CreateProduct(ctx context.Context, pGrpc *productService.Product) (*productService.Product, error) {
@@ -73,7 +77,7 @@ func (g *grpcService) DeleteProduct(ctx context.Context, id *productService.ID) 
 	return nil, nil
 }
 
-func (g *grpcService) GRPCSERVER() {
+func (g *grpcService) NewGrpc() {
 	listener, err := net.Listen("tcp", "localhost:50051")
 	if err != nil {
 		log.Printf("Failed on listener: %v", err)

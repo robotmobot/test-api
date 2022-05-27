@@ -1,4 +1,4 @@
-package handler
+package http
 
 import (
 	"bytes"
@@ -19,7 +19,7 @@ func TestGetAllProducts_Success(t *testing.T) {
 	var products []model.Product
 
 	ctrl := gomock.NewController(t)
-	mockCtrl := mocks.NewMockHandlerRepo(ctrl)
+	mockCtrl := mocks.NewMockRepo(ctrl)
 
 	e := echo.New()
 	req := httptest.NewRequest(http.MethodGet, "/", nil)
@@ -40,7 +40,7 @@ func TestGetProductByID_Success(t *testing.T) {
 	var err error
 
 	ctrl := gomock.NewController(t)
-	mockCtrl := mocks.NewMockHandlerRepo(ctrl)
+	mockCtrl := mocks.NewMockRepo(ctrl)
 
 	e := echo.New()
 	req := httptest.NewRequest(http.MethodGet, "/products/:id", nil)
@@ -64,7 +64,7 @@ func TestGetProductByID_Error(t *testing.T) {
 	err := errors.New("bad request")
 
 	ctrl := gomock.NewController(t)
-	mockCtrl := mocks.NewMockHandlerRepo(ctrl)
+	mockCtrl := mocks.NewMockRepo(ctrl)
 
 	e := echo.New()
 	req := httptest.NewRequest(http.MethodGet, "/products/:id", nil)
@@ -88,7 +88,7 @@ func TestCreateProduct_JSONBody(t *testing.T) {
 	product := model.Product{}
 	var err error
 	ctrl := gomock.NewController(t)
-	mockCtrl := mocks.NewMockHandlerRepo(ctrl)
+	mockCtrl := mocks.NewMockRepo(ctrl)
 	e := echo.New()
 
 	body, err := json.Marshal(product)
@@ -116,7 +116,7 @@ func TestCreateProduct_ControllerError(t *testing.T) {
 	err := errors.New("bad request")
 
 	ctrl := gomock.NewController(t)
-	mockCtrl := mocks.NewMockHandlerRepo(ctrl)
+	mockCtrl := mocks.NewMockRepo(ctrl)
 	e := echo.New()
 	req := httptest.NewRequest(http.MethodPost, "/products", nil)
 	req.Header.Set("Content-Type", "application/json")

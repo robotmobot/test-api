@@ -1,4 +1,4 @@
-package handler
+package http
 
 import (
 	"test-api/model"
