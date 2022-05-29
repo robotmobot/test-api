@@ -9,5 +9,4 @@ func main() {
 	db := database.NewDB()
 	r := router.NewEcho(*db)
 	r.Logger.Fatal(r.Start("localhost:1324"))
-
 }

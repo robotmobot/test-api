@@ -3,6 +3,8 @@ package gRPC
 import (
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"gorm.io/gorm"
 	"log"
 	"net"
@@ -24,19 +26,19 @@ func NewGrpcService(pc controller.ProductController) *grpcService {
 
 }
 
-type ProductService_GetAllProductsServer struct {
-	products []*model.Product
-}
-
+//GetProductByID
+//Passes gRPC request to controller, changes result to proto message and returns that message
 func (g *grpcService) GetProductByID(ctx context.Context, id *productService.ID) (*productService.Product, error) {
 	product, err := g.pc.GetProductByID(id.GetId())
 	if err != nil {
-		return nil, err
+		return nil, status.Error(codes.NotFound, "Product with this ID not found")
 	}
 
 	return product.ToProto(), nil
 }
 
+//CreateProduct
+//Changes gRPC request into Product model and passes that to controller, returns created Product as proto message
 func (g *grpcService) CreateProduct(ctx context.Context, pGrpc *productService.Product) (*productService.Product, error) {
 	product := model.Product{
 		ID:         pGrpc.GetId(),
@@ -53,6 +55,8 @@ func (g *grpcService) CreateProduct(ctx context.Context, pGrpc *productService.P
 	return pGrpc, nil
 }
 
+//UpdateProduct
+////Changes gRPC request into Product model and passes that to controller, returns updated Product as proto message
 func (g *grpcService) UpdateProduct(ctx context.Context, pGrpc *productService.Product) (*productService.Product, error) {
 	product := model.Product{
 		ID:         pGrpc.GetId(),
@@ -68,6 +72,8 @@ func (g *grpcService) UpdateProduct(ctx context.Context, pGrpc *productService.P
 	return pGrpc, nil
 }
 
+//DeleteProduct
+//Gets id from the proto message and deletes the record with that id from table. Returns nil(need to change this)
 func (g *grpcService) DeleteProduct(ctx context.Context, id *productService.ID) (*productService.Product, error) {
 	err := g.pc.DeleteProduct(id.GetId())
 	if err != nil {
@@ -77,6 +83,8 @@ func (g *grpcService) DeleteProduct(ctx context.Context, id *productService.ID) 
 	return nil, nil
 }
 
+//NewGrpc
+//Starts the gRPC server
 func (g *grpcService) NewGrpc() {
 	listener, err := net.Listen("tcp", "localhost:50051")
 	if err != nil {
@@ -87,7 +95,6 @@ func (g *grpcService) NewGrpc() {
 	productService.RegisterProductServiceServer(s, g)
 
 	log.Printf("Listener on %v", listener.Addr())
-	s.Serve(listener)
 	if err := s.Serve(listener); err != nil {
 		log.Fatalf("Failed on server %v", err)
 	}

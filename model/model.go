@@ -20,7 +20,7 @@ type ProductFilter struct {
 }
 
 type ProductFilter2 struct {
-	Name       string  `form:"name" json:"name"`
+	Name       string  `form:"name" json:"name,omitempty"`
 	Detail     string  `form:"detail" json:"detail"`
 	Price      float32 `form:"price" json:"price"`
 	IsCampaign bool    `form:"is_campaign" json:"is_campaign"`

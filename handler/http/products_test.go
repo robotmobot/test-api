@@ -1,3 +1,5 @@
+//go:generate mockgen -source ./handler/http/repo.go -destination ./mocks/mock_controller.go -package=mocks
+
 package http
 
 import (

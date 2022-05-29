@@ -99,7 +99,6 @@ func (pf *ProductController) DeleteProduct(id int32) error {
 	err := pf.Db.First(&product, id).Error
 	fmt.Println(product)
 	if err != nil {
-		fmt.Println("check")
 		return err
 	}
 
