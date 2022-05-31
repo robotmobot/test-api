@@ -114,7 +114,7 @@ func (h *Handler) DeleteProduct(c echo.Context) error {
 }
 
 func (h *Handler) BatchCreateProduct(c echo.Context) error {
-	products := []model.Product{}
+	var products []model.Product
 
 	done := make(chan bool, 1)
 	done <- true

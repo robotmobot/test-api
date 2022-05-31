@@ -5,11 +5,16 @@ services:
                 image: postgres:14.2-alpine
                 restart: always
                 ports:
-                        - 5432:5432
+                        - "5432:5432"
                 environment:
                         POSTGRES_USER: user
                         POSTGRES_PASSWORD: password
                         POSTGRES_DB: test_data
+        redis:
+                image: redis:7.0-alpine
+                restart: always
+                ports:
+                        - "6379:6379"
 #        test-api:
 #              image: test_api_latest
 #              build: 

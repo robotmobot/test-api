@@ -1,16 +1,17 @@
 package router
 
 import (
-	"github.com/labstack/echo/v4"
-	"gorm.io/gorm"
 	"test-api/controller"
 	"test-api/handler/http"
+
+	"github.com/go-redis/redis/v8"
+	"github.com/labstack/echo/v4"
+	"gorm.io/gorm"
 )
 
-func NewEcho(db gorm.DB) *echo.Echo {
+func NewEcho(db gorm.DB, rc redis.Client) *echo.Echo {
 	e := echo.New()
-
-	pc := controller.NewProductController(&db)
+	pc := controller.NewProductController(&db, rc)
 	pf := http.Repo(pc)
 	h := http.NewHandler(pf)
 

@@ -8,7 +8,8 @@ import (
 
 func main() {
 	db := database.NewDB()
-	pc := controller.NewProductController(db)
+	rc := database.ConnectRedis()
+	pc := controller.NewProductController(db, *rc)
 	test := gRPC.NewGrpcService(*pc)
 	test.NewGrpc()
 }

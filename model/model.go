@@ -26,8 +26,18 @@ type ProductFilter2 struct {
 	IsCampaign bool    `form:"is_campaign" json:"is_campaign"`
 }
 
-func (p Product) ToProto() *productService.Product {
-	return &productService.Product{
+func (p Product) ToProto() *productService.ProductRes {
+	return &productService.ProductRes{
+		Id:         p.ID,
+		Name:       p.Name,
+		Detail:     p.Detail,
+		Price:      p.Price,
+		IsCampaign: p.IsCampaign,
+	}
+}
+
+func (p Product) ToProto2() *productService.ProductReq {
+	return &productService.ProductReq{
 		Id:         p.ID,
 		Name:       p.Name,
 		Detail:     p.Detail,

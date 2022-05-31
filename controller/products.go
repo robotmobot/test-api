@@ -3,15 +3,22 @@ package controller
 import (
 	"fmt"
 	"test-api/model"
+
+	"github.com/go-redis/redis/v8"
+	"golang.org/x/net/context"
 )
 
 type ProductController struct {
 	Db DbRepo
+	Rc redis.Client
 }
 
-func NewProductController(db DbRepo) *ProductController {
+var ctx = context.Background()
+
+func NewProductController(db DbRepo, Rc redis.Client) *ProductController {
 	return &ProductController{
 		Db: db,
+		Rc: Rc,
 	}
 }
 
@@ -19,8 +26,8 @@ func NewProductController(db DbRepo) *ProductController {
 //List all products from the table
 func (pf *ProductController) GetAllProducts() ([]model.Product, error) {
 	var products []model.Product
-	err := pf.Db.Find(&products).Error
 
+	err := pf.Db.Find(&products).Error
 	if err != nil {
 		return nil, err
 	}
@@ -32,6 +39,8 @@ func (pf *ProductController) GetAllProducts() ([]model.Product, error) {
 //List product provided by the ID
 func (pf *ProductController) GetProductByID(id int32) (*model.Product, error) {
 	product := model.Product{}
+	test := pf.Rc.HGet(ctx, "product", string(id))
+	fmt.Println(test.Result())
 	err := pf.Db.First(&product, id).Error
 	if err != nil {
 		return nil, err
@@ -73,7 +82,7 @@ func (pf *ProductController) CreateProduct(p *model.Product) error {
 	if err != nil {
 		return err
 	}
-
+	pf.Rc.HSet(ctx, "product", model.Product{ID: p.ID})
 	return nil
 }
 

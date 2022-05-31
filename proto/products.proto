@@ -23,6 +23,13 @@ message ProductRes{
   bool is_campaign = 5;
 }
 
+message FilterReq{
+  string name = 1;
+  string detail =2;
+  float price =3;
+  bool is_campaign = 4;
+}
+
 message IdReq{
   int32 id = 1;
 }
@@ -37,4 +44,5 @@ service ProductService{
   rpc CreateProduct (ProductReq) returns (ProductRes){};
   rpc UpdateProduct (ProductReq) returns (ProductRes){};
   rpc DeleteProduct (IdReq) returns (google.protobuf.Empty){};
+  rpc FindProduct (FilterReq) returns (ProductRes);
 }
