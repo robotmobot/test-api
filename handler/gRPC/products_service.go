@@ -1,7 +1,6 @@
 package gRPC
 
 import (
-	"fmt"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -40,7 +39,7 @@ func (g *grpcService) GetAllProducts(ctx context.Context, in *emptypb.Empty) (*p
 	for _, product := range products {
 		productRes = append(productRes, product.ToProto2())
 	}
-	fmt.Println(productRes)
+
 	return &productService.GetAllProductRes{Products: productRes}, nil
 }
 

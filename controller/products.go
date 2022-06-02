@@ -2,10 +2,11 @@ package controller
 
 import (
 	"fmt"
-	"test-api/model"
-
 	"github.com/go-redis/redis/v8"
+	"github.com/labstack/gommon/log"
 	"golang.org/x/net/context"
+	"test-api/model"
+	"time"
 )
 
 type ProductController struct {
@@ -38,21 +39,27 @@ func (pf *ProductController) GetAllProducts() ([]model.Product, error) {
 // GetProductByID
 //List product provided by the ID
 func (pf *ProductController) GetProductByID(id int32) (*model.Product, error) {
-	product := model.Product{}
-	test := pf.Rc.HGet(ctx, "product", string(id))
-	fmt.Println(test.Result())
-	err := pf.Db.First(&product, id).Error
+	var product model.Product
+	test, err := pf.Rc.Get(ctx, string(id)).Bytes()
+	if err != nil {
+		log.Errorf("Cache error on Set :%v", err)
+	}
+	if err == nil {
+		product, _ = product.UnmarshalBinary(test)
+		return &product, nil
+	}
+
+	err = pf.Db.First(&product, id).Error
 	if err != nil {
 		return nil, err
 	}
-
 	return &product, nil
 }
 
 // FindProduct
 //find product by creating query from request body
 func (pf *ProductController) FindProduct(filter model.ProductFilter) ([]model.Product, error) {
-	product := []model.Product{}
+	var product []model.Product
 
 	err := pf.Db.Where("name = ? AND price >= ? AND is_campaign = ?", *filter.Name, *filter.Price, *filter.IsCampaign).Find(&product).Error
 	if err != nil {
@@ -65,7 +72,7 @@ func (pf *ProductController) FindProduct(filter model.ProductFilter) ([]model.Pr
 // FindProductQueryParams
 //find product from query params/url
 func (pf *ProductController) FindProductQueryParams(filter *model.ProductFilter2) ([]model.Product, error) {
-	product := []model.Product{}
+	var product []model.Product
 	err := pf.Db.Where("name = ? AND price >= ? AND is_campaign = ?", filter.Name, filter.Price, filter.IsCampaign).Find(&product).Error
 
 	if err != nil {
@@ -82,7 +89,14 @@ func (pf *ProductController) CreateProduct(p *model.Product) error {
 	if err != nil {
 		return err
 	}
-	pf.Rc.HSet(ctx, "product", model.Product{ID: p.ID})
+	pRedis, err := p.MarshalBinary()
+	if err != nil {
+		log.Error(err)
+	}
+	err = pf.Rc.Set(ctx, string(p.ID), pRedis, 90*time.Second).Err()
+	if err != nil {
+		log.Errorf("Caching error :%v", err)
+	}
 	return nil
 }
 

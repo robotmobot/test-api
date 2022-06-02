@@ -1,6 +1,7 @@
 package model
 
 import (
+	"encoding/json"
 	"test-api/proto"
 )
 
@@ -44,4 +45,13 @@ func (p Product) ToProto2() *productService.ProductReq {
 		Price:      p.Price,
 		IsCampaign: p.IsCampaign,
 	}
+}
+
+func (p Product) MarshalBinary() ([]byte, error) {
+	return json.Marshal(p)
+}
+
+func (p Product) UnmarshalBinary(data []byte) (Product, error) {
+	err := json.Unmarshal(data, &p)
+	return p, err
 }
