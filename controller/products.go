@@ -37,15 +37,14 @@ func (pf *ProductController) GetAllProducts() ([]model.Product, error) {
 }
 
 // GetProductByID
-//List product provided by the ID
+//List product provided by the ID, returns from the Redis if Product is cached when created.
 func (pf *ProductController) GetProductByID(id int32) (*model.Product, error) {
 	var product model.Product
-	test, err := pf.Rc.Get(ctx, string(id)).Bytes()
-	if err != nil {
-		log.Errorf("Cache error on Set :%v", err)
-	}
+	var err error
+
+	product, err = pf.getRedis(product, id)
 	if err == nil {
-		product, _ = product.UnmarshalBinary(test)
+		log.Printf("Redis used")
 		return &product, nil
 	}
 
@@ -53,6 +52,8 @@ func (pf *ProductController) GetProductByID(id int32) (*model.Product, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	log.Printf("Postgres used")
 	return &product, nil
 }
 
@@ -84,19 +85,13 @@ func (pf *ProductController) FindProductQueryParams(filter *model.ProductFilter2
 
 // CreateProduct
 //Creates one product from the request body
+//Both on Redis and Postgresql
 func (pf *ProductController) CreateProduct(p *model.Product) error {
 	err := pf.Db.Create(&p).Error
 	if err != nil {
 		return err
 	}
-	pRedis, err := p.MarshalBinary()
-	if err != nil {
-		log.Error(err)
-	}
-	err = pf.Rc.Set(ctx, string(p.ID), pRedis, 90*time.Second).Err()
-	if err != nil {
-		log.Errorf("Caching error :%v", err)
-	}
+	pf.setRedis(p)
 	return nil
 }
 
@@ -128,4 +123,26 @@ func (pf *ProductController) DeleteProduct(id int32) error {
 	pf.Db.Delete(&product)
 
 	return err
+}
+
+func (pf *ProductController) getRedis(p model.Product, id int32) (model.Product, error) {
+	resultRedis, err := pf.Rc.Get(ctx, string(id)).Bytes()
+	if err != nil {
+		log.Errorf("Cache error on Set :%v", err)
+	}
+
+	p, err = p.UnmarshalBinary(resultRedis)
+	return p, err
+}
+
+func (pf *ProductController) setRedis(p *model.Product) {
+	productRedis, err := p.MarshalBinary()
+	if err != nil {
+		log.Error(err)
+	}
+
+	err = pf.Rc.Set(ctx, string(p.ID), productRedis, 10*time.Minute).Err()
+	if err != nil {
+		log.Errorf("Caching error :%v", err)
+	}
 }

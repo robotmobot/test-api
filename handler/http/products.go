@@ -136,7 +136,7 @@ func (h *Handler) BatchCreateProduct(c echo.Context) error {
 				h.wg.Done()
 				done <- true
 			}(product)
-		case <-time.After(1000 * time.Millisecond):
+		case <-time.After(5 * time.Second):
 			return c.JSON(http.StatusRequestTimeout, "timeout")
 		}
 	}
